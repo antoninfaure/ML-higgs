@@ -6,17 +6,28 @@ def load_data_train(path_dataset,sub_sample=True, add_outlier=False):
         path_dataset, delimiter=",", dtype=str,  skip_header=1)
     ids = data[:,0]
     labels = data[:,1]
-    labels[labels=='s']=0
-    labels[labels=='b']=1
+    labels[labels=='s']=1
+    labels[labels=='b']=-1
     labels = np.asarray(labels, dtype=float)
     data = np.delete(data, [0,1], 1)
     data = np.asarray(data, dtype=float)
     return data, labels, ids
 
+def create_csv_submission(ids, y_pred, name):
+    """
+    Creates an output file in .csv format for submission to Kaggle or AIcrowd
+    Arguments: ids (event ids associated with each prediction)
+               y_pred (predicted class labels)
+               name (string name of .csv output file to be created)
+    """
+    with open(name, "w") as csvfile:
+        fieldnames = ["Id", "Prediction"]
+        writer = csv.DictWriter(csvfile, delimiter=",", fieldnames=fieldnames)
+        writer.writeheader()
+        for r1, r2 in zip(ids, y_pred):
+            writer.writerow({"Id": int(r1), "Prediction": int(r2)})
+
 def clean_data(data):
-    # Remove columns with more than 50% of -999
-    dirty_cols = np.where(np.sum(data == -999, axis=0)/data.shape[0] < 0.5, True, False)
-    data = data[:, dirty_cols]
     # Replace -999 by nan
     data = np.where(data == -999, np.nan, data)
     # Compute the columns means without nan values 
@@ -35,3 +46,25 @@ def standardize(x):
     std_x = np.std(x, axis=0)
     x = x / std_x
     return x
+
+def predict_logistic(tx, w):
+    def sigmoid(t):
+        return 1.0 / (1 + np.exp(-t))
+    y = sigmoid(tx @ w)
+    # s = 1 , b = -1
+    y[y > 0.5] = 1
+    y[y <= 0.5] = -1
+    return y
+
+def load_data_test(path_dataset,sub_sample=True, add_outlier=False):
+    """Load data and convert it to the metric system."""
+    data = np.genfromtxt(
+        path_dataset, delimiter=",", dtype=str,  skip_header=1)
+    ids = data[:,0]
+    labels = data[:,1]
+    data = np.delete(data, [0,1], 1)
+    data = np.asarray(data, dtype=float)
+    return data, labels, ids
+
+def accuracy(a, b):
+    return np.sum(a == b)/a.shape[0]
