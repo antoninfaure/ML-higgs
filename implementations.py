@@ -107,3 +107,23 @@ def ridge_regression(y, tx, lambda_):
     print(w)
     print(loss)
     return w, loss
+
+
+def mean_squared_error_gd(y, tx, w_init, max_iters, gamma):
+    w = w_init.copy()
+    for n in range (max_iters):
+        gradient = -tx.T.dot(y - tx.dot(w))/tx.shape[0]
+        w -= gamma * gradient
+    loss = 1/(2*tx.shape[0])*np.sum((y - tx.dot(w))**2)
+    return w, loss
+
+def mean_squared_error_sgd(y, tx, w_init, max_iters, gamma):
+    batch_size = 1
+    w = w_init.copy()
+    for n in range (max_iters):
+        for j in range(0,len(y),batch_size):
+            w -= (gamma/batch_size) * (tx.dot(w) - y).dot(tx).T
+    loss =  1/(2*tx.shape[0])*np.sum((y - tx.dot(w))**2)
+    print(loss)
+    print(w)
+    return w, loss
