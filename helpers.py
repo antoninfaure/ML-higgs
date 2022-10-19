@@ -1,14 +1,16 @@
 import numpy as np
+import csv as csv
 
-def load_data_train(path_dataset,sub_sample=True, add_outlier=False):
+def load_data(path_dataset,sub_sample=True, add_outlier=False, train=True):
     """Load data and convert it to the metric system."""
     data = np.genfromtxt(
         path_dataset, delimiter=",", dtype=str,  skip_header=1)
     ids = data[:,0]
     labels = data[:,1]
-    labels[labels=='s']=1
-    labels[labels=='b']=-1
-    labels = np.asarray(labels, dtype=float)
+    if train == True:
+        labels[labels=='s']=1
+        labels[labels=='b']=-1
+        labels = np.asarray(labels, dtype=float)
     data = np.delete(data, [0,1], 1)
     data = np.asarray(data, dtype=float)
     return data, labels, ids
@@ -55,16 +57,6 @@ def predict_logistic(tx, w):
     y[y > 0.5] = 1
     y[y <= 0.5] = -1
     return y
-
-def load_data_test(path_dataset,sub_sample=True, add_outlier=False):
-    """Load data and convert it to the metric system."""
-    data = np.genfromtxt(
-        path_dataset, delimiter=",", dtype=str,  skip_header=1)
-    ids = data[:,0]
-    labels = data[:,1]
-    data = np.delete(data, [0,1], 1)
-    data = np.asarray(data, dtype=float)
-    return data, labels, ids
 
 def accuracy(a, b):
     return np.sum(a == b)/a.shape[0]
