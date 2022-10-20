@@ -80,9 +80,13 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
             print("Current iteration={i}, loss={l}".format(i=it, l=loss))
         # Converge criterion
         losses.append(loss)
-        # If loss doesn't change more than threshold or is looping between two values, break
-        if len(losses) > 2 and ((np.abs(losses[-1] - losses[-2]) < threshold) or(losses[-1] == losses[-3])):
-            print("breaking")
+        # If loss doesn't change more than threshold, break
+        if len(losses) > 1 and (np.abs(losses[-1] - losses[-2]) < threshold) :
+            print("breaking threshold")
+            break
+        # If loss is looping between two values, break
+        if len(losses) > 3 and (losses[-1] == losses[-3]) :
+            print("breaking looping")
             break
     # Compute final loss without regularization term
     loss = np.sum(np.logaddexp(0, tx @ w) - y * tx.dot(w))/tx.shape[0]
@@ -148,11 +152,14 @@ def mean_squared_error_gd(y, tx, w_init, max_iters, gamma):
     for n in range (max_iters):
         gradient = -tx.T.dot(y - tx.dot(w))/tx.shape[0]
         w -= gamma * gradient
+        # Log info
+        if n % 100 == 0:
+            print(f"Current iteration={n}")
     loss = 1/(2*tx.shape[0])*np.sum((y - tx.dot(w))**2)
 
     return w, loss
 
-def mean_squared_error_sgd(y, tx, w_init, max_iters, gamma):
+def mean_squared_error_sgd(y, tx, w_init, max_iters, gamma, batch_size = 1):
     """Training function to compute mean squared error solution using stochastic gradient descent, with batch_size=1
     
     Args:
@@ -161,16 +168,21 @@ def mean_squared_error_sgd(y, tx, w_init, max_iters, gamma):
         w_init (np.array): Initial weights of shape (D,)
         max_iters (integer): Maximum number of iterations.
         gamma (float): Step size
+        batch_size (integer): Batch size
         
     Returns:
         w (np.array): optimal weights, numpy array of shape(D,), D is the number of features.
         loss (float): Final value of the cost function.
     """
-    batch_size = 1
     w = w_init.copy()
     for n in range (max_iters):
         for j in range(0,len(y),batch_size):
-            w += (gamma/batch_size) * tx.T.dot(y - tx.dot(w))
+            tx_batch = tx[j:j+batch_size, :]
+            y_batch = y[j:j+batch_size]
+            w += (gamma/batch_size) * tx_batch.T.dot(y_batch - tx_batch.dot(w))
+            # Log info
+            if j % 100 == 0:
+                print(f"Current iteration: n={n}, j={j}")
     loss =  1/(2*tx.shape[0])*np.sum((y - tx.dot(w))**2)
 
     return w, loss
