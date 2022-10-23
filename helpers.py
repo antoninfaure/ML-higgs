@@ -29,6 +29,22 @@ def create_csv_submission(ids, y_pred, name):
         for r1, r2 in zip(ids, y_pred):
             writer.writerow({"Id": int(r1), "Prediction": int(r2)})
 
+
+# Shuffle data
+def shuffle_data(y, tx, seed=1):
+    np.random.seed(seed)
+    inds = np.random.permutation(tx.shape[0])
+    tx = tx[inds]
+    y = y[inds]
+    return y, tx
+
+# Slice data and labels into training and validation sets
+def slice_data(y, tx, ratio, seed=1): 
+    slice_id = int(np.floor(y.shape[0]*ratio))
+    y_va, y_tr = y[:slice_id], y[slice_id:]
+    tx_va, tx_tr = tx[:slice_id], tx[slice_id:]
+    return y_va, y_tr, tx_va, tx_tr
+
 def clean_data(data):
     # Replace -999 by nan
     data = np.where(data == -999, np.nan, data)

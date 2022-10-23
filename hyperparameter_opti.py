@@ -2,55 +2,88 @@ import implementations as impl
 import helpers as helpers
 import numpy as np
 
+def best_lambda_selection(y, tx, max_iters, gamma):
+	seed = 12
+	lambdas = np.logspace(-6, 1, 8) #change last parameter to 10 if it works
+
+	# Split data into training and validation sets
+	y_va, y_tr, tx_va, tx_tr = helpers.slice_data(y, tx, 0.25, seed)
+
+	# Add biases to data
+	tx_va = np.c_[np.ones((y_va.shape[0], 1)), tx_va]
+	tx_tr = np.c_[np.ones((y_tr.shape[0], 1)), tx_tr]
+
+	initial_w = np.random.normal(0., 0.1, [tx_tr.shape[1],])
+
+	# define lists to store the loss of training data and validation data
+	losses_training = []
+	losses_validation = []
+
+	# cross validation
+	for lambda_ in lambdas:
+		print(f"Current lambda={lambda_}")
+
+		# weights and training loss for logistic regression model:
+		w, loss_training = impl.reg_logistic_regression(y_tr, tx_tr, lambda_, initial_w, max_iters, gamma) 
+
+		# calculate the loss for validation data:
+		loss_validation = (np.sum(np.logaddexp(0, tx_va.dot(w)) + y_va * tx_va.dot(w)) + lambda_*np.linalg.norm(w)**2)/y_va.shape[0]
+
+		losses_training.append(loss_training)
+		losses_validation.append(loss_validation)
+
+	ind_best_lambda = np.argmin(losses_validation)
+	best_lambda = lambdas[ind_best_lambda]
+	print(f"Best lambda = {best_lambda}, training_loss = {losses_training[ind_best_lambda]}, validation_loss = {losses_validation[ind_best_lambda]}")
+	return best_lambda
+
+def best_gamma_selection(y, tx, max_iters):
+	seed = 12
+	gammas = np.logspace(-6, 2, 9)
+
+	# Split data into training and validation sets
+	y_va, y_tr, tx_va, tx_tr = helpers.slice_data(y, tx, 0.25, seed)
+
+	# Add biases to data
+	tx_va = np.c_[np.ones((y_va.shape[0], 1)), tx_va]
+	tx_tr = np.c_[np.ones((y_tr.shape[0], 1)), tx_tr]
+
+	initial_w = np.random.normal(0., 0.1, [tx_tr.shape[1],])
+
+	# define lists to store the loss of training data and validation data
+	losses_training = []
+	losses_validation = []
+
+	for gamma in gammas:
+		print(f"Current gamma={gamma}")
+
+		w, loss_training = impl.logistic_regression(y_tr, tx_tr, initial_w, max_iters, gamma=gamma)
+
+		# calculate the loss for validation data:
+		loss_validation = np.sum(np.logaddexp(0, tx_va.dot(w)) + y_va * tx_va.dot(w))/y_va.shape[0]
+
+		losses_training.append(loss_training)
+		losses_validation.append(loss_validation)
+
+	ind_best_gamma = np.argmin(losses_validation)
+	best_gamma = gammas[ind_best_gamma]
+	print(f"Best lambda = {best_gamma}, training_loss = {losses_training[ind_best_gamma]}, validation_loss = {losses_validation[ind_best_gamma]}")
+	return best_gamma
+
+
 
 # Load train data
-train_data, train_labels, train_ids = helpers.load_data('train.csv')
+tx, y, ids = helpers.load_data('train.csv')
 
 # Clean and standardize train data
-train_data = helpers.standardize(helpers.clean_data(train_data))
-train_labels[train_labels==-1]=0
+tx = helpers.standardize(helpers.clean_data(tx))
+y[y==-1]=0
 
 # Shuffle data
-inds = np.random.permutation(train_data.shape[0])
-train_data = train_data[inds]
-train_labels = train_labels[inds] 
+y, tx = helpers.shuffle_data(y, tx)
 
-# Add bias to data
-tx_train = np.c_[np.ones((train_labels.shape[0], 1)), train_data]
+best_gamma = best_gamma_selection(y, tx, 1000)
 
-# Slice data into training and validation sets
-slice_id = int(np.floor(train_labels.shape[0]*0.25))
-validation_labels, train_labels = train_labels[:slice_id], train_labels[slice_id:]
-tx_validation, tx_train = tx_train[:slice_id, :], tx_train[slice_id:, :]
-
-# Initialize the weights randomly according to a Gaussian distribution
-initial_w = np.random.normal(0., 0.1, [tx_train.shape[1],])
-
-# Train model
-validation_accuracies = []
-train_accuracies = []
-gammas = np.power(10,np.arange(-5, 1, 1, dtype=float))
-for gamma in gammas:
-	trained_weights, train_loss = impl.logistic_regression(train_labels, tx_train, initial_w, max_iters=1000, gamma=gamma)
-	print(f"train_loss = {train_loss}, gamma={gamma}")
-
-	# Cross-validation
-	validation_predict = helpers.predict_logistic(tx_validation, trained_weights)
-	train_predict = helpers.predict_logistic(tx_train, trained_weights)
-	validation_predict[validation_predict == -1] = 0
-	train_predict[train_predict == -1] = 0
-	train_accuracy = helpers.accuracy(train_predict, train_labels)
-	validation_accuracy = helpers.accuracy(validation_predict, validation_labels)
-	print(f"train_accuracy = {train_accuracy}")
-	print(f"validation_accuracy = {validation_accuracy}")
-	train_accuracies.append(train_accuracy)
-	validation_accuracies.append(validation_accuracy)
-
-results = zip(gammas, train_accuracies, validation_accuracies)
-results = sorted(results, key = lambda t: t[2])
-for a,b,c in results:
-	print(f"gamma = {a}, train_accuracy = {b}, validation_accuracy = {c}")
-
-print(trained_weights)
+best_lambda = best_lambda_selection(y, tx, 1000, best_gamma)
 
 exit()
