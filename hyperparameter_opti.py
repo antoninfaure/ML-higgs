@@ -31,6 +31,7 @@ def best_lambda_selection(y, tx, max_iters, gamma):
 
 		losses_training.append(loss_training)
 		losses_validation.append(loss_validation)
+		print(f"training_loss = {loss_training}, validation_loss = {loss_validation}")
 
 	ind_best_lambda = np.argmin(losses_validation)
 	best_lambda = lambdas[ind_best_lambda]
@@ -64,10 +65,11 @@ def best_gamma_selection(y, tx, max_iters):
 
 		losses_training.append(loss_training)
 		losses_validation.append(loss_validation)
+		print(f"training_loss = {loss_training}, validation_loss = {loss_validation}")
 
 	ind_best_gamma = np.argmin(losses_validation)
 	best_gamma = gammas[ind_best_gamma]
-	print(f"Best lambda = {best_gamma}, training_loss = {losses_training[ind_best_gamma]}, validation_loss = {losses_validation[ind_best_gamma]}")
+	print(f"Best gamma = {best_gamma}, training_loss = {losses_training[ind_best_gamma]}, validation_loss = {losses_validation[ind_best_gamma]}")
 	return best_gamma
 
 
