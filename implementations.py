@@ -70,15 +70,15 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     w = initial_w.copy()
     for it in range(max_iters):
         # Compute loss without regularization term
-        #loss = np.sum(np.logaddexp(0, tx @ w) - y * tx.dot(w))/tx.shape[0]
+        loss = np.sum(np.logaddexp(0, tx @ w) - y * tx.dot(w))/tx.shape[0]
         # Compute gradient with regularization term
         grad = (tx.T.dot(sigmoid(tx.dot(w)) - y))/tx.shape[0] + 2*lambda_*w
         # Apply GD
         w -= gamma * grad
         # Log info
         if it % 100 == 0:
-            #print("Current iteration={i}, loss={l}".format(i=it, l=loss))
-            print(f"Current it = {it}")
+            print("Current iteration={i}, loss={l}".format(i=it, l=loss))
+            #print(f"Current it = {it}")
         # Converge criterion
         #losses.append(loss)
         # If loss doesn't change more than threshold, break
