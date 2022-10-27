@@ -13,32 +13,15 @@ y_train[y_train==-1]=0
 y_train, tx_train = helpers.shuffle_data(y_train, tx_train)
 
 # Split, clean and standardize data into 4 sets according to 22nd feature
-tx_0, y_0, _, miss_col_0 = helpers.split_i(tx_train, y_train, ids_train, 0)
-tx_1, y_1, _, miss_col_1 = helpers.split_i(tx_train, y_train, ids_train, 1)
-tx_2, y_2, _, miss_col_2 = helpers.split_i(tx_train, y_train, ids_train, 2)
-tx_3, y_3, _, miss_col_3 = helpers.split_i(tx_train, y_train, ids_train, 3)
-
-print(tx_0.shape)
-print(tx_1.shape)
-print(tx_2.shape)
-print(tx_3.shape)
-
-# Expand to degree 2
-tx_train_0 = helpers.build_poly_deg2(tx_0)
-tx_train_1 = helpers.build_poly_deg2(tx_1)
-tx_train_2 = helpers.build_poly_deg2(tx_2)
-tx_train_3 = helpers.build_poly_deg2(tx_3)
+tx_train_0, y_0, _, miss_col_0 = helpers.split_i(tx_train, y_train, ids_train, 0)
+tx_train_1, y_1, _, miss_col_1 = helpers.split_i(tx_train, y_train, ids_train, 1)
+tx_train_2, y_2, _, miss_col_2 = helpers.split_i(tx_train, y_train, ids_train, 2)
+tx_train_3, y_3, _, miss_col_3 = helpers.split_i(tx_train, y_train, ids_train, 3)
 
 print(tx_train_0.shape)
 print(tx_train_1.shape)
 print(tx_train_2.shape)
 print(tx_train_3.shape)
-
-# Add bias to data
-tx_train_0 = np.c_[np.ones((tx_train_0.shape[0], 1)), tx_train_0]
-tx_train_1 = np.c_[np.ones((tx_train_1.shape[0], 1)), tx_train_1]
-tx_train_2 = np.c_[np.ones((tx_train_2.shape[0], 1)), tx_train_2]
-tx_train_3 = np.c_[np.ones((tx_train_3.shape[0], 1)), tx_train_3]
 
 # Initialize the weights randomly according to a Gaussian distribution
 initial_w_0 = np.random.normal(0., 0.1, [tx_train_0.shape[1],])
@@ -108,6 +91,8 @@ predict_test_3 = helpers.predict_logistic(tx_test_3, w_3)
 # Concatenate sets
 predict_test = np.concatenate((predict_test_0, predict_test_1, predict_test_2, predict_test_3))
 ids_test = np.concatenate((ids_test_0, ids_test_1, ids_test_2, ids_test_3))
+
+print(predicted_test.shape)
 
 # Output csv
 helpers.create_csv_submission(ids_test, predicted_labels, 'Predictions_Logistics_degree2_split4.csv')

@@ -143,5 +143,11 @@ def split_i(tx, y, ids, i, miss_col=[]):
 
     #Standardize the data
     tx_i = standardize(tx_i)
+
+    # Expand to degree 2
+    tx_i = build_poly_deg2(tx_i)
+
+    # Add bias to data
+    tx_i = np.c_[np.ones((tx_i.shape[0], 1)), tx_i]
     
     return tx_i, y_i, ids_i, miss_col
