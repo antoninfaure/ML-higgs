@@ -49,12 +49,44 @@ def clean_data(data):
     # Replace -999 by nan
     data = np.where(data == -999, np.nan, data)
     # Compute the columns means without nan values 
-    means = np.nanmean(data, axis=0)
+    #means = np.nanmean(data, axis=0)
+    medians = np.nanmedian(data, axis=0)
     #Find indices that you need to replace
     inds = np.where(np.isnan(data))
     #Place column means in the indices. Align the arrays using take
-    data[inds] = np.take(means, inds[1])
+    data[inds] = np.take(medians, inds[1])
     return data
+
+def clean_data_medians(data):
+    # Replace -999 by nan
+    data = np.where(data == -999, np.nan, data)
+    # Compute the columns medians without nan values 
+    medians = np.nanmedian(data, axis=0)
+    #Find indices that you need to replace
+    inds = np.where(np.isnan(data))
+    #Place column means in the indices. Align the arrays using take
+    data[inds] = np.take(medians, inds[1])
+    return data
+
+def build_poly_corr(x):
+    """multiply correlated features"""
+    poly = x.copy()
+    coeff = np.corrcoef(x.T)
+    ind = np.where(np.absolute(coeff)>=.5)
+    indices = list(zip(ind[0], ind[1]))
+    for i,j in indices:
+        poly = np.c_[poly, x[:,i]*x[:,j]]
+    return poly
+
+def build_poly_deg2(x):
+    """polynomial basis functions for input data x, to degree 2"""
+    poly = x.copy()
+    n = x.shape[1]
+    for i in range(n):
+        for j in range(n):
+            if (i <= j):
+                poly = np.c_[poly, x[:,i]*x[:,j]]
+    return poly
 
 # Standardize the data
 def standardize(x):
@@ -84,3 +116,32 @@ def predict_logistic(tx, w):
 
 def accuracy(a, b):
     return np.sum(a == b)/a.shape[0]
+
+
+def split_i(tx, y, ids, i, miss_col=[]):
+    rows_i = np.where(tx[:, 22]==i)[0]
+    tx_i = tx[rows_i]
+    y_i = y[rows_i]
+    ids_i = ids[rows_i]
+    
+    if len(miss_col) == 0:
+        # Remove features with all values equals to -999
+        miss_col = np.where(np.sum(tx_i == -999, axis=0) == tx_i.shape[0])[0]
+
+        # Remove 22nd feature
+        miss_col = np.append(miss_col, 22)
+
+        # If label is 0 then remove 2nd last feature
+        if (0 == i):
+            miss_col = np.append(miss_col,tx_i.shape[1] - 1)
+
+    # Remove chosen features
+    tx_i = np.delete(tx_i, miss_col, 1)
+
+    # Replace -999 values by median of feature
+    tx_i = clean_data(tx_i)
+
+    #Standardize the data
+    tx_i = standardize(tx_i)
+    
+    return tx_i, y_i, ids_i, miss_col
