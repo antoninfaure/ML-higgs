@@ -21,26 +21,35 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
     losses = []
     
     w = initial_w.copy()
+
     for it in range(max_iters):
+
         # Compute cost function
         loss = np.sum(np.logaddexp(0, tx.dot(w)) - y * tx.dot(w))/tx.shape[0]
+
         # Compute gradient
         grad = tx.T.dot(sigmoid(tx.dot(w)) - y)/tx.shape[0]
-        # Apply GD
+
+        # Apply gradient descent
+
         w -= gamma * grad
         # Log info
         if it % 100 == 0:
             print("Current iteration={i}, loss={l}".format(i=it, l=loss))
+
         # Converge criterion
         losses.append(loss)
+
         # If loss doesn't change more than threshold, break
-        #if len(losses) > 1 and (np.abs(losses[-1] - losses[-2]) < threshold) :
-            #print("breaking threshold")
-            #break
+        if len(losses) > 1 and (np.abs(losses[-1] - losses[-2]) < threshold) :
+            print("breaking threshold")
+            break
+
         # If loss is looping between two values, break
-        #if len(losses) > 3 and (losses[-1] == losses[-3]) :
-            #print("breaking looping")
-            #break
+        if len(losses) > 3 and (losses[-1] == losses[-3]) :
+            print("breaking looping")
+            break
+
     # Compute final cost function
     loss = np.sum(np.logaddexp(0, tx.dot(w)) - y * tx.dot(w))/tx.shape[0]
 
@@ -68,27 +77,35 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
     losses = []
     
     w = initial_w.copy()
+
     for it in range(max_iters):
+
         # Compute loss without regularization term
         loss = np.sum(np.logaddexp(0, tx @ w) - y * tx.dot(w))/tx.shape[0]
+
         # Compute gradient with regularization term
         grad = (tx.T.dot(sigmoid(tx.dot(w)) - y))/tx.shape[0] + 2*lambda_*w
-        # Apply GD
+
+        # Apply gradient descent
         w -= gamma * grad
+
         # Log info
         if it % 100 == 0:
             print("Current iteration={i}, loss={l}".format(i=it, l=loss))
-            #print(f"Current it = {it}")
+
         # Converge criterion
-        #losses.append(loss)
+        losses.append(loss)
+
         # If loss doesn't change more than threshold, break
-        #if len(losses) > 1 and (np.abs(losses[-1] - losses[-2]) < threshold) :
-           #print("breaking threshold")
-            #break
+        if len(losses) > 1 and (np.abs(losses[-1] - losses[-2]) < threshold) :
+            print("breaking threshold")
+            break
+
         # If loss is looping between two values, break
-        #if len(losses) > 3 and (losses[-1] == losses[-3]) :
-            #print("breaking looping")
-            #break
+        if len(losses) > 3 and (losses[-1] == losses[-3]) :
+            print("breaking looping")
+            break
+
     # Compute final loss without regularization term
     loss = np.sum(np.logaddexp(0, tx @ w) - y * tx.dot(w))/tx.shape[0]
 
@@ -108,7 +125,9 @@ def least_squares(y, tx):
     #We solve the normal equations using QR decomposition, which is a computationally efficient method.
     a = tx.T.dot(tx)
     b = tx.T.dot(y)
+
     w = np.linalg.solve(a, b)
+
     err = y - tx.dot(w)
     loss = np.mean(err**2)/2
     
@@ -127,8 +146,10 @@ def ridge_regression(y, tx, lambda_):
         loss (float): Final value of the cost function.
     """
     I = np.eye(tx.shape[1])
+
     # Compute closed form weights
     w = np.linalg.inv(tx.T.dot(tx) + 2*lambda_*y.shape[0] * I).dot(tx.T @ y)
+
     # Compute loss without regularization term
     loss = np.sum((tx.dot(w) - y)**2)/(2*y.shape[0])
 
@@ -150,12 +171,19 @@ def mean_squared_error_gd(y, tx, w_init, max_iters, gamma):
         loss (float): Final value of the cost function.
     """
     w = w_init.copy()
+
     for n in range (max_iters):
+        # Compute mean square error gradient
         gradient = -tx.T.dot(y - tx.dot(w))/tx.shape[0]
+
+        # Apply gradient descent
         w -= gamma * gradient
+
         # Log info
         if n % 100 == 0:
             print(f"Current iteration={n}")
+
+    # Compute final loss function
     loss = 1/(2*tx.shape[0])*np.sum((y - tx.dot(w))**2)
 
     return w, loss
@@ -178,13 +206,20 @@ def mean_squared_error_sgd(y, tx, w_init, max_iters, gamma, batch_size = 1):
     w = w_init.copy()
     for n in range (max_iters):
         for j in range(0,len(y),batch_size):
+
+            # Select batch data
             tx_batch = tx[j:j+batch_size, :]
             y_batch = y[j:j+batch_size]
+
+            # Compute gradient and apply gradient descent 
             w += (gamma/batch_size) * tx_batch.T.dot(y_batch - tx_batch.dot(w))
+
             # Log info
             if j % 100 == 0:
                 print(f"Current iteration: n={n}, j={j}")
-    loss =  1/(2*tx.shape[0])*np.sum((y - tx.dot(w))**2)
+
+    # Compute final loss
+    loss =  np.sum((y - tx.dot(w))**2)/(2*tx.shape[0])
 
     return w, loss
 
