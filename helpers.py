@@ -57,17 +57,6 @@ def clean_data(data):
     data[inds] = np.take(medians, inds[1])
     return data
 
-def clean_data_medians(data):
-    # Replace -999 by nan
-    data = np.where(data == -999, np.nan, data)
-    # Compute the columns medians without nan values 
-    medians = np.nanmedian(data, axis=0)
-    #Find indices that you need to replace
-    inds = np.where(np.isnan(data))
-    #Place column means in the indices. Align the arrays using take
-    data[inds] = np.take(medians, inds[1])
-    return data
-
 def build_poly_corr(x):
     """multiply correlated features"""
     poly = x.copy()
@@ -88,42 +77,64 @@ def build_poly_deg2(x):
                 poly = np.c_[poly, x[:,i]*x[:,j]]
     return poly
 
-# Standardize the data
-def standardize(x):
+# Standardize the data by the mean and std
+def standardize(x, mean_x =[], std_x =[]):
     #Standardize the original data set.
-    mean_x = np.mean(x, axis=0)
+    if len(mean_x) == 0:
+        mean_x = np.mean(x, axis=0)
     x = x - mean_x
-    std_x = np.std(x, axis=0)
+    if len(std_x) == 0:
+        std_x = np.std(x, axis=0)
     x = x / std_x
-    return x
+    return x, mean_x, std_x
 
-# Build polynomial expansion
-def build_poly(x, degree):
-    """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    poly = np.ones((len(x), 1))
-    for deg in range(1, degree+1):
-        poly = np.c_[poly, np.power(x, deg)]
-    return poly[:,1:]
-
+# Predict the labels of logistic regression
 def predict_logistic(tx, w):
     def sigmoid(t):
         return 1.0 / (1 + np.exp(-t))
     y = sigmoid(tx @ w)
-    # s = 1 , b = -1
-    y[y > 0.5] = 1
     y[y <= 0.5] = -1
+    y[y > 0.5] = 1
     return y
 
+# Predict the labels
+def predict(tx, w):
+    y = tx.dot(w)
+    y[y < 0.5] = -1
+    y[y >= 0.5] = 1
+    return y
+
+# Compute accuracy
 def accuracy(a, b):
     return np.sum(a == b)/a.shape[0]
 
 
+# Split the dataset according to the 22nd feature value (=i)
 def split_i(tx, y, ids, i, miss_col=[]):
+    """
+    Split the dataset according to the 22nd feature value (=i)
+    Arguments: 
+        tx (np.array): dataset of shape (N,D), D is the number of features.
+        y (np.array): labels of shape (N,), N is the number of samples.
+        ids (np.array): ids of the samples (N,)
+        i (integer): value of the 22nd feature that we are evaluating
+        miss_col (np.array): indices of the features to remove (if provided)
+    Returns:
+        tx_i (np.array): subset of tx corresponding to i value
+        y_i (np.array): subset of y corresponding to i value
+        ids_i (np.array): subset of ids corresponding to i value
+        miss_col (np.array): indices of the features removed
+    """
+
+    # Gets the rows indicies where the 22nd feature is equal to i
     rows_i = np.where(tx[:, 22]==i)[0]
+
+    # Extract the set corresponding to i from the dataset 
     tx_i = tx[rows_i]
     y_i = y[rows_i]
     ids_i = ids[rows_i]
     
+    # (for test data the miss_col is provided)
     if len(miss_col) == 0:
         # Remove features with all values equals to -999
         miss_col = np.where(np.sum(tx_i == -999, axis=0) == tx_i.shape[0])[0]
@@ -140,14 +151,5 @@ def split_i(tx, y, ids, i, miss_col=[]):
 
     # Replace -999 values by median of feature
     tx_i = clean_data(tx_i)
-
-    #Standardize the data
-    tx_i = standardize(tx_i)
-
-    # Expand to degree 2
-    tx_i = build_poly_deg2(tx_i)
-
-    # Add bias to data
-    tx_i = np.c_[np.ones((tx_i.shape[0], 1)), tx_i]
     
     return tx_i, y_i, ids_i, miss_col

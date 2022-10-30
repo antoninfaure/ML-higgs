@@ -34,13 +34,13 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
         # Converge criterion
         losses.append(loss)
         # If loss doesn't change more than threshold, break
-        if len(losses) > 1 and (np.abs(losses[-1] - losses[-2]) < threshold) :
-            print("breaking threshold")
-            break
+        #if len(losses) > 1 and (np.abs(losses[-1] - losses[-2]) < threshold) :
+            #print("breaking threshold")
+            #break
         # If loss is looping between two values, break
-        if len(losses) > 3 and (losses[-1] == losses[-3]) :
-            print("breaking looping")
-            break
+        #if len(losses) > 3 and (losses[-1] == losses[-3]) :
+            #print("breaking looping")
+            #break
     # Compute final cost function
     loss = np.sum(np.logaddexp(0, tx.dot(w)) - y * tx.dot(w))/tx.shape[0]
 

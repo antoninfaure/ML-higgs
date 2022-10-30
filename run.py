@@ -23,6 +23,24 @@ print(tx_train_1.shape)
 print(tx_train_2.shape)
 print(tx_train_3.shape)
 
+#Standardize the data
+tx_train_0, mean_0, std_0 = helpers.standardize(tx_train_0)
+tx_train_1, mean_1, std_1 = helpers.standardize(tx_train_1)
+tx_train_2, mean_2, std_2 = helpers.standardize(tx_train_2)
+tx_train_3, mean_3, std_3 = helpers.standardize(tx_train_3)
+
+# Expand to degree 2
+tx_train_0 = helpers.build_poly_deg2(tx_train_0)
+tx_train_1 = helpers.build_poly_deg2(tx_train_1)
+tx_train_2 = helpers.build_poly_deg2(tx_train_2)
+tx_train_3 = helpers.build_poly_deg2(tx_train_3)
+
+# Add bias to data
+tx_train_0 = np.c_[np.ones((tx_train_0.shape[0], 1)), tx_train_0]
+tx_train_1 = np.c_[np.ones((tx_train_1.shape[0], 1)), tx_train_1]
+tx_train_2 = np.c_[np.ones((tx_train_2.shape[0], 1)), tx_train_2]
+tx_train_3 = np.c_[np.ones((tx_train_3.shape[0], 1)), tx_train_3]
+
 # Initialize the weights randomly according to a Gaussian distribution
 initial_w_0 = np.random.normal(0., 0.1, [tx_train_0.shape[1],])
 initial_w_1 = np.random.normal(0., 0.1, [tx_train_1.shape[1],])
@@ -30,10 +48,10 @@ initial_w_2 = np.random.normal(0., 0.1, [tx_train_2.shape[1],])
 initial_w_3 = np.random.normal(0., 0.1, [tx_train_3.shape[1],])
 
 # Train models
-w_0, train_loss_0 = impl.logistic_regression(y_0, tx_train_0, initial_w_0, max_iters=20000, gamma=0.01)
-w_1, train_loss_1 = impl.logistic_regression(y_1, tx_train_1, initial_w_1, max_iters=20000, gamma=0.01)
-w_2, train_loss_2 = impl.logistic_regression(y_2, tx_train_2, initial_w_2, max_iters=20000, gamma=0.01)
-w_3, train_loss_3 = impl.logistic_regression(y_3, tx_train_3, initial_w_3, max_iters=20000, gamma=0.01)
+w_0, train_loss_0 = impl.logistic_regression(y_0, tx_train_0, initial_w_0, max_iters=15000, gamma=0.1)
+w_1, train_loss_1 = impl.logistic_regression(y_1, tx_train_1, initial_w_1, max_iters=15000, gamma=0.01)
+w_2, train_loss_2 = impl.logistic_regression(y_2, tx_train_2, initial_w_2, max_iters=15000, gamma=0.01)
+w_3, train_loss_3 = impl.logistic_regression(y_3, tx_train_3, initial_w_3, max_iters=15000, gamma=0.01)
 
 print(f"train_loss_0 = {train_loss_0}")
 print(f"train_loss_1 = {train_loss_1}")
@@ -69,6 +87,12 @@ tx_test_0, y_test_0, ids_test_0, _ = helpers.split_i(tx_test, y_test, ids_test, 
 tx_test_1, y_test_1, ids_test_1, _ = helpers.split_i(tx_test, y_test, ids_test, 1, miss_col_1)
 tx_test_2, y_test_2, ids_test_2, _ = helpers.split_i(tx_test, y_test, ids_test, 2, miss_col_2)
 tx_test_3, y_test_3, ids_test_3, _ = helpers.split_i(tx_test, y_test, ids_test, 3, miss_col_3)
+
+#Standardize the data
+tx_test_0, _, _ = helpers.standardize(tx_test_0, mean_0, std_0)
+tx_test_1, _, _ = helpers.standardize(tx_test_1, mean_1, std_1)
+tx_test_2, _, _ = helpers.standardize(tx_test_2, mean_2, std_2)
+tx_test_3, _, _ = helpers.standardize(tx_test_3, mean_3, std_3)
 
 # Expand to degree 2
 tx_test_0 = helpers.build_poly_deg2(tx_test_0)
