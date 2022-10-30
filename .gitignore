@@ -1,4 +1,2 @@
-test.csv
-train.csv
-sample_submission.csv
-train_neat.ods
+.DS_STORE
+*.csv
