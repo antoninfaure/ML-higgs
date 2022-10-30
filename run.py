@@ -116,9 +116,9 @@ predict_test_3 = helpers.predict_logistic(tx_test_3, w_3)
 predict_test = np.concatenate((predict_test_0, predict_test_1, predict_test_2, predict_test_3))
 ids_test = np.concatenate((ids_test_0, ids_test_1, ids_test_2, ids_test_3))
 
-print(predicted_test.shape)
+print(predict_test.shape)
 
 # Output csv
-helpers.create_csv_submission(ids_test, predicted_labels, 'Predictions_Logistics_degree2_split4.csv')
+helpers.create_csv_submission(ids_test, predict_test, 'Predictions_Logistics_degree2_split4.csv')
 
 exit()
