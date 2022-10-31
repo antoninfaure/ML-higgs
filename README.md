@@ -14,4 +14,19 @@ Alexandre Maillard : @
 
 ## Data:
 
-The data sets required to train the prediction models we have implemented can be found in 
+The data sets required to train and test the prediction models we have implemented can be found on AIcrowd: https://www.aicrowd.com/challenges/epfl-machine-learning-higgs/dataset_files
+
+To run our code, please download these files and put them in the same folder as our code files. 
+
+## Implementations:
+The six functions we were asked to implement can be found in the implementations.py file. 
+
+## Best model prediction:
+
+The script run.py produces the same predictions which we used in our best submission on AIcrowd, that is logistic regression after degree 2 expansion of the features with 4-fold data splitting.
+The csv file that is generated is called Predictions_Logistics_degree2_split4.csv.
+
+## Other model prediction algorithms:
+In order to run the other prediction algorithms we implemented, please follow the following instructions:
+- to run least squares, ridge regression, logistic regression, and regularized logistic regression (without the 4-fold split) : run the script run_all_models.ipynb
+- to tun logistic regression and regularized logistic regression with the 4-fold data splitting : run ML_Project_1_2.ipynb
