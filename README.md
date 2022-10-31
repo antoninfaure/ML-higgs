@@ -6,9 +6,15 @@ This repository contains the code for the Machine Learning course Project 1.
 
 ## Team:
 This project was accomplished by:
-Antonin Faure: @
-Manon Dorster : @mdorster
-Alexandre Maillard : @
+- Antonin Faure: @
+- Manon Dorster : @mdorster
+- Alexandre Maillard : @
+
+## Introduction to the project:
+
+The aim of our project is to apply machine learning methods to CERN particle accelerator data to determine Higgs boson
+generation across multiple proton collision events. From a dataset consisting of feature vectors representing the decay
+signature of collision events, our goal was to predict whether the events consisted in a signal (a Higgs boson) or background
 
 # Project structure: 
 
@@ -30,3 +36,7 @@ The csv file that is generated is called Predictions_Logistics_degree2_split4.cs
 In order to run the other prediction algorithms we implemented, please follow the following instructions:
 - to run least squares, ridge regression, logistic regression, and regularized logistic regression (without the 4-fold split) : run the script run_all_models.ipynb
 - to tun logistic regression and regularized logistic regression with the 4-fold data splitting : run ML_Project_1_2.ipynb
+
+## Report:
+
+A 2 page scientific report describes the most relevant feature engineering techniques and implementations that we worked on, and explains how and why these techniques improved our predictions. 
