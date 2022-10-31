@@ -22,6 +22,7 @@ signature of collision events, our goal was to predict whether the events consis
 
 The data sets required to train and test the prediction models we have implemented can be found on AIcrowd: https://www.aicrowd.com/challenges/epfl-machine-learning-higgs/dataset_files
 
+**Note**
 To run our code, please download these files and put them in the same folder as our code files. 
 
 ## Implementations:
