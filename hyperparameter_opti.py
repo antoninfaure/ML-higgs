@@ -18,7 +18,8 @@ def best_lambda_selection(y, tx, max_iters, gamma):
 	lambdas = np.logspace(-6, -1, 3) #change last parameter to 10 if it works; don't go above 1!
 
 	# Split data into training and validation sets
-	y_validation, y_train, tx_validation, tx_train = helpers.slice_data(y, tx, 0.25, seed)
+	ratio = 0.25
+	y_validation, y_train, tx_validation, tx_train = helpers.slice_data(y, tx, ratio, seed)
 
 	# Add biases to data
 	tx_validation = np.c_[np.ones((y_validation.shape[0], 1)), tx_validation]
@@ -29,6 +30,7 @@ def best_lambda_selection(y, tx, max_iters, gamma):
 	# Define lists to store the losses of training data and validation data
 	losses_training = []
 	losses_validation = []
+	losses = []
 
 	# Test every lambdas
 	for lambda_ in lambdas:
@@ -43,12 +45,13 @@ def best_lambda_selection(y, tx, max_iters, gamma):
 		# Store results
 		losses_training.append(loss_training)
 		losses_validation.append(loss_validation)
-		print(f"training_loss = {loss_training}, validation_loss = {loss_validation}")
+		losses.append(loss_training*(1-ratio)+loss_validation*ratio)
+		print(f"training_loss = {loss_training}, validation_loss = {loss_validation}, total_loss = {loss_training*(1-ratio)+loss_validation*ratio}")
 
-	# Select best lambda according to validation loss
-	ind_best_lambda = np.argmin(losses_validation)
+	# Select best lambda according to validation and training loss combined
+	ind_best_lambda = np.argmin(losses)
 	best_lambda = lambdas[ind_best_lambda]
-	print(f"Best lambda = {best_lambda}, training_loss = {losses_training[ind_best_lambda]}, validation_loss = {losses_validation[ind_best_lambda]}")
+	print(f"Best lambda = {best_lambda}, training_loss = {losses_training[ind_best_lambda]}, validation_loss = {losses_validation[ind_best_lambda]}, total_loss = {losses[ind_best_lambda]}")
 	return best_lambda
 
 def best_gamma_selection(y, tx, max_iters):
@@ -63,11 +66,11 @@ def best_gamma_selection(y, tx, max_iters):
     """  
 
 	seed = 12
-	gammas = np.logspace(-6, 0, 9)
-	gammas = np.append(gammas, 2)
+	gammas = np.logspace(-6, -1, 6)
 
 	# Split data into training and validation sets
-	y_validation, y_train, tx_validation, tx_train = helpers.slice_data(y, tx, 0.25, seed)
+	ratio = 0.25
+	y_validation, y_train, tx_validation, tx_train = helpers.slice_data(y, tx, ratio, seed)
 
 	# Add biases to data
 	tx_validation = np.c_[np.ones((y_validation.shape[0], 1)), tx_validation]
@@ -78,6 +81,7 @@ def best_gamma_selection(y, tx, max_iters):
 	# Define lists to store the losses of training data and validation data
 	losses_training = []
 	losses_validation = []
+	losses = []
 
 	# Test every gamma
 	for gamma in gammas:
@@ -91,38 +95,39 @@ def best_gamma_selection(y, tx, max_iters):
 
 		losses_training.append(loss_training)
 		losses_validation.append(loss_validation)
-		print(f"training_loss = {loss_training}, validation_loss = {loss_validation}")
+		losses.append(loss_training*(1-ratio)+loss_validation*ratio)
+		print(f"training_loss = {loss_training}, validation_loss = {loss_validation}, total_loss = {loss_training*(1-ratio)+loss_validation*ratio}")
 
-	# Select best gamma according to validation loss
-	ind_best_gamma = np.argmin(losses_validation)
+	# Select best gamma according to validation and training loss combined
+	ind_best_gamma = np.argmin(losses)
 	best_gamma = gammas[ind_best_gamma]
-	print(f"Best gamma = {best_gamma}, training_loss = {losses_training[ind_best_gamma]}, validation_loss = {losses_validation[ind_best_gamma]}")
+	print(f"Best gamma = {best_gamma}, training_loss = {losses_training[ind_best_gamma]}, validation_loss = {losses_validation[ind_best_gamma]}, total_loss = {losses[ind_best_gamma]}")
 	return best_gamma
 
 
 # Load train data
-tx, y, ids = helpers.load_data('train.csv')
+#tx, y, ids = helpers.load_data('train.csv')
 
 # Refactor the -1 in 0 value for logistic regression
-y[y==-1]=0
+#y[y==-1]=0
 
 # Shuffle data
-y, tx = helpers.shuffle_data(y, tx)
+#y, tx = helpers.shuffle_data(y, tx)
 
 # Split and clean data into 4 sets according to 22nd feature
-tx_train_0, y_0, _, miss_col_0 = helpers.split_i(tx, y, ids, 0)
+#tx_train_0, y_0, _, miss_col_0 = helpers.split_i(tx, y, ids, 0)
 
 #Standardize the data
-tx_train_0, mean_0, std_0 = helpers.standardize(tx_train_0)
+#tx_train_0, mean_0, std_0 = helpers.standardize(tx_train_0)
 
 # Expand to degree 2
-tx_train_0 = helpers.build_poly_deg2(tx_train_0)
+#tx_train_0 = helpers.build_poly_deg2(tx_train_0)
 
 # Add bias to data
-tx_train_0 = np.c_[np.ones((tx_train_0.shape[0], 1)), tx_train_0]
+#tx_train_0 = np.c_[np.ones((tx_train_0.shape[0], 1)), tx_train_0]
 
-best_gamma = best_gamma_selection(y_0, tx_train_0, 3000)
+#best_gamma = best_gamma_selection(y_0, tx_train_0, 3000)
 
-best_lambda = best_lambda_selection(y_0, tx_train_0, 3000, best_gamma)
+#best_lambda = best_lambda_selection(y_0, tx_train_0, 3000, best_gamma)
 
-exit()
+#exit()

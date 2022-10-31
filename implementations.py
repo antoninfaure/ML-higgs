@@ -17,7 +17,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
         """apply sigmoid function on t."""
         return 1 / (1 + np.exp(-t))
 
-    threshold = 1e-8
+    threshold = 1e-9
     losses = []
     
     w = initial_w.copy()
@@ -73,7 +73,7 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
         """apply sigmoid function on t."""
         return 1.0 / (1 + np.exp(-t))
 
-    threshold = 1e-8
+    threshold = 1e-9
     losses = []
     
     w = initial_w.copy()

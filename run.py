@@ -12,7 +12,7 @@ y_train[y_train==-1]=0
 # Shuffle data
 y_train, tx_train = helpers.shuffle_data(y_train, tx_train)
 
-# Split, clean and standardize data into 4 sets according to 22nd feature
+# Split and clean data into 4 sets according to 22nd feature
 tx_train_0, y_0, _, miss_col_0 = helpers.split_i(tx_train, y_train, ids_train, 0)
 tx_train_1, y_1, _, miss_col_1 = helpers.split_i(tx_train, y_train, ids_train, 1)
 tx_train_2, y_2, _, miss_col_2 = helpers.split_i(tx_train, y_train, ids_train, 2)
@@ -51,7 +51,7 @@ initial_w_3 = np.random.normal(0., 0.1, [tx_train_3.shape[1],])
 w_0, train_loss_0 = impl.logistic_regression(y_0, tx_train_0, initial_w_0, max_iters=15000, gamma=0.1)
 w_1, train_loss_1 = impl.logistic_regression(y_1, tx_train_1, initial_w_1, max_iters=15000, gamma=0.01)
 w_2, train_loss_2 = impl.logistic_regression(y_2, tx_train_2, initial_w_2, max_iters=15000, gamma=0.01)
-w_3, train_loss_3 = impl.logistic_regression(y_3, tx_train_3, initial_w_3, max_iters=15000, gamma=0.01)
+w_3, train_loss_3 = impl.logistic_regression(y_3, tx_train_3, initial_w_3, max_iters=15000, gamma=0.1)
 
 print(f"train_loss_0 = {train_loss_0}")
 print(f"train_loss_1 = {train_loss_1}")
