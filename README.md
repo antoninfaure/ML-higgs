@@ -2,7 +2,7 @@
 ml-project-1-md_am_af-project1 created by GitHub Classroom
 
 # General information:
-This repository contains the code for the Machine Learning course Project 1.
+This repository contains the code and documentation for the Machine Learning course Project 1 accomplished our team.
 
 ## Team:
 This project was accomplished by:
