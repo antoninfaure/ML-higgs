@@ -27,12 +27,20 @@ To run our code, please download these files and put them in the same folder as 
 
 ## Implementations:
 The six functions we were asked to implement can be found in the [implementations.py](implementations.py) file. 
+- ridge_regression(y, tx, lambda_)
+- least_squares(y, tx)
+- mean_squared_error_gd(y, tx, w_init, max_iters, gamma)
+- mean_squared_error_sgd(y, tx, w_init, max_iters, gamma, batch_size = 1)
+- logistic_regression(y, tx, initial_w, max_iters, gamma)
+- reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma)
 
 ## Helpers file
 The [helpers.py](helpers.py) contains all the functions used in our [run.py](run.py) in order to use the implemented algorithms.
 
 ## Hyperparameter optimization
 The [hyperparameter_opti.py](hyperparameter_opti.py) contains two methods used to find the best gamma and lambda for the logistic regression using training data.
+- best_lambda_selection(y, tx, max_iters, gamma)
+- best_gamma_selection(y, tx, max_iters)
 
 ## Best model prediction:
 
