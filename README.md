@@ -6,9 +6,9 @@ This repository contains the code for the Machine Learning course Project 1.
 
 ## Team:
 This project was accomplished by:
-- Antonin Faure: @
+- Antonin Faure: @antoninfaure
 - Manon Dorster : @mdorster
-- Alexandre Maillard : @
+- Alexandre Maillard : @AlexMlld
 
 ## Introduction to the project:
 
