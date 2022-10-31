@@ -35,7 +35,7 @@ The csv file that is generated is called Predictions_Logistics_degree2_split4.cs
 ## Other model prediction algorithms:
 In order to run the other prediction algorithms we implemented, please follow the following instructions:
 - to run least squares, ridge regression, logistic regression, and regularized logistic regression (without the 4-fold split) : run the script run_all_models.ipynb
-- to tun logistic regression and regularized logistic regression with the 4-fold data splitting : run ML_Project_1_2.ipynb
+- to run logistic regression and regularized logistic regression with the 4-fold data splitting : run ML_Project_1_2.ipynb
 
 ## Report:
 
